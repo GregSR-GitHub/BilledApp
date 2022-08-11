@@ -21,11 +21,17 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     const formData = new FormData()
+    const fileNamePart = fileName.split('.')
+    const fileExtend = fileNamePart[fileNamePart.length-1]
+    const fileFormat = ['png','jpeg', 'jpg']
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
     formData.append('email', email)
+    console.log(fileExtend)
 
-    this.store
+    if(fileFormat.includes(fileExtend)){
+      console.log(fileName)
+      this.store
       .bills()
       .create({
         data: formData,
@@ -39,6 +45,12 @@ export default class NewBill {
         this.fileUrl = fileUrl
         this.fileName = fileName
       }).catch(error => console.error(error))
+      
+    }else{
+      e.target.value = ''
+    }
+
+
   }
   handleSubmit = e => {
     e.preventDefault()
