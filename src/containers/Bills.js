@@ -52,11 +52,9 @@ export default class {
               }
             }
           })
-          console.log('length', bills.length)
-          const billsSorted = bills.sort(function (a, b) {
-            return a.date - b.date;
-          });
-        return billsSorted
+          .sort((a, b) => b.date > a.date ? 1 : -1)
+        console.log('length', bills.length)
+        return bills
       })
     }
   }
