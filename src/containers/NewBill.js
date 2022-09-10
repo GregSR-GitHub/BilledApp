@@ -17,7 +17,7 @@ export default class NewBill {
   }
   handleChangeFile = e => {
     e.preventDefault()
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    const file = e.target.files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     const formData = new FormData()
@@ -30,7 +30,7 @@ export default class NewBill {
     console.log(fileExtend)
 
     if(fileFormat.includes(fileExtend)){
-      console.log(fileName)
+      console.log("Name: " , fileName)
       this.store
       .bills()
       .create({
@@ -40,7 +40,8 @@ export default class NewBill {
         }
       })
       .then(({fileUrl, key}) => {
-        console.log(fileUrl)
+        console.log("Url: " , fileUrl)
+        console.log(this)
         this.billId = key
         this.fileUrl = fileUrl
         this.fileName = fileName
@@ -69,8 +70,12 @@ export default class NewBill {
       fileName: this.fileName,
       status: 'pending'
     }
+    console.log(this)
+    if(bill.date&&bill.pct&&bill.amount&&bill.fileUrl&&bill.fileName){
+    console.log(bill)
     this.updateBill(bill)
     this.onNavigate(ROUTES_PATH['Bills'])
+    }
   }
 
   // not need to cover this function by tests

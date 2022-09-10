@@ -16,6 +16,14 @@ import router from "../app/Router.js";
 jest.mock("../app/store", () => mockStore)
 
 describe("Given I am connected as an employee", () => {
+
+  describe('When I am on Bills page but it is loading', () => {
+    test('Then, Loading page should be rendered', () => {
+      document.body.innerHTML = BillsUI({ loading: true })
+      expect(screen.getAllByText('Loading...')).toBeTruthy()
+    })
+  })
+
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
 
@@ -65,9 +73,35 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
+    describe('When I am on Bills Page and i click on the icon eye', () => {
+      test('A modal should open', () => {
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+        }))
+        document.body.innerHTML = BillsUI({ data: bills })
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname })
+        }
+        const store = null
+        const billsPage = new Bills({ document, onNavigate, store, localStorage })
+  
+        const handleClickIconEye = jest.fn(billsPage.handleClickIconEye)
+        const eye = screen.getAllByTestId('icon-eye')[0]
+        expect(eye).toBeTruthy()
+        eye.addEventListener('click', handleClickIconEye(eye))
+        userEvent.click(eye)
+        expect(handleClickIconEye).toHaveBeenCalled()
+  
+        const modale = screen.getByTestId('modaleFile')
+        expect(modale).toBeTruthy()
+      })
+    })
+
   describe("When I navigate to Bills", () => {
     test("fetches bills from mock API GET", async () => {
       localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "a@a" }));
+      document.body.innerHTML = ''
       const root = document.createElement("div")
       root.setAttribute("id", "root")
       document.body.append(root)
