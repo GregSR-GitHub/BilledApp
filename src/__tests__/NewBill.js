@@ -41,6 +41,32 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
+  describe('When I am select a picture', () => {
+    test(('handleChangefile should by called'), async () => {
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      jest.spyOn(mockStore, "bills")
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+      const store = mockStore
+      document.body.innerHTML =  NewBillUI()
+      const testImageFile = new File(["hello"], "hello.png", { type: "image/png" });
+      const newBill = new NewBill({ document, onNavigate, store, localStorage })
+      const handleChangeFile = jest.fn(newBill.handleChangeFile)
+      handleChangeFile({
+        target: {
+          files: [ testImageFile ],
+          value: 'C:\fakepath\hello.png',
+        },
+        preventDefault: function(){}
+      })
+      expect(handleChangeFile).toHaveBeenCalled()
+    })
+  })
+
   describe("When I do not fill fields and I click on Submit button", () => {
     test("Then It should not change of page", () => {
       document.body.innerHTML = NewBillUI();
@@ -61,8 +87,9 @@ describe("Given I am connected as an employee", () => {
     });
   });
 
-  describe("When I fill fields and I click on Submit button", () => {
-    test("Then It should renders Bills page", async () => {
+  describe("When I fill all fields and I click on Submit button", () => {
+    
+    test("Then It should renders Bills page if the entry are correct", async () => {
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname })
       }
@@ -82,7 +109,6 @@ describe("Given I am connected as an employee", () => {
       screen.getByTestId('vat').value = 70
       screen.getByTestId('pct').value = 20
       screen.getByTestId('commentary').value = "Ceci est un commentaire"
-      // userEvent.upload(screen.getByTestId('file'), testImageFile)
       const fileInput = screen.getByTestId('file')
       const handleChangeFile = jest.fn(newBill.handleChangeFile)
       fireEvent.change(fileInput, {  target: {files: [testImageFile]}  })
@@ -100,10 +126,8 @@ describe("Given I am connected as an employee", () => {
       fireEvent.submit(form);
       expect(screen.getByText("Mes notes de frais")).toBeTruthy()
     });
-  });
-
-  describe("When I fill fields and I click on Submit button, but the file is not un PNG or a JPG", () => {
-    test("Then It should renders Bills page", async () => {
+  
+    test("Then It should stay on NewBills page if  the file is not un PNG or a JPG", async () => {
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname })
       }
@@ -123,7 +147,6 @@ describe("Given I am connected as an employee", () => {
       screen.getByTestId('vat').value = 70
       screen.getByTestId('pct').value = 20
       screen.getByTestId('commentary').value = "Ceci est un commentaire"
-      // userEvent.upload(screen.getByTestId('file'), testImageFile)
       const fileInput = screen.getByTestId('file')
       const handleChangeFile = jest.fn(newBill.handleChangeFile)
       fireEvent.change(fileInput, {  target: {files: [testImageFile]}  })
@@ -142,37 +165,4 @@ describe("Given I am connected as an employee", () => {
       expect(screen.getByTestId("form-new-bill")).toBeTruthy();
     });
   });
-
-  describe('When I am select a picture', () => {
-    test(('handleChangefile should by called'), async () => {
-      const onNavigate = (pathname) => {
-        document.body.innerHTML = ROUTES({ pathname })
-      }
-      jest.spyOn(mockStore, "bills")
-      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee'
-      }))
-      const store = mockStore
-      document.body.innerHTML =  NewBillUI()
-      const testImageFile = new File(["hello"], "hello.png", { type: "image/png" });
-      const newBill = new NewBill({ document, onNavigate, store, localStorage })
-      const handleChangeFile = jest.fn(newBill.handleChangeFile)
-      // userEvent.upload(screen.getByTestId('file'), testImageFile)
-      handleChangeFile({
-        target: {
-          files: [ testImageFile ],
-          value: 'C:\fakepath\hello.png',
-        },
-        preventDefault: function(){}
-      })
-      // fireEvent.change(fileInput, {
-      //   target: {
-      //     files: [testImageFile],
-      //     value: '',
-      //   },
-      // })
-      expect(handleChangeFile).toHaveBeenCalled()
-    })
-  })
 })
