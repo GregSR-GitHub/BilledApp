@@ -86,9 +86,9 @@ export default class {
   }
 
   handleEditTicket(e, bill, bills) {
-    if (this.counter === undefined || this.id !== bill.id) this.counter = 0
+    if (this.counterEdit === undefined || this.id !== bill.id) this.counterEdit = 0
     if (this.id === undefined || this.id !== bill.id) this.id = bill.id
-    if (this.counter % 2 === 0) {
+    if (this.counterEdit % 2 === 0) {
       bills.forEach(b => {
         $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
       })
@@ -96,7 +96,7 @@ export default class {
       $('.dashboard-right-container div').html(DashboardFormUI(bill))
       $('.vertical-navbar').css({ height: '150vh' })
       console.log("Open Bill")
-      this.counter ++
+      this.counterEdit ++
     } else {
       $(`#open-bill${bill.id}`).css({ background: '#0D5AE5' })
 
@@ -105,9 +105,9 @@ export default class {
       `)
       $('.vertical-navbar').css({ height: '120vh' })
       console.log("Close Bill")
-      this.counter ++
+      this.counterEdit ++
     }
-    console.log("click(" + bill.id + "): " + this.counter)
+    console.log("click(" + bill.id + "): " + this.counterEdit)
     $('#icon-eye-d').click(this.handleClickIconEye)
     $('#btn-accept-bill').click((e) => this.handleAcceptSubmit(e, bill))
     $('#btn-refuse-bill').click((e) => this.handleRefuseSubmit(e, bill))
@@ -134,29 +134,30 @@ export default class {
   }
 
   handleShowTickets(e, bills, index) {
-    console.log("Start Groupe " + this.index + " Compteur: " + this.counter);
-    if (this.counter === undefined || this.index !== index) this.counter = 0
+    
+    if (this.counter === undefined) this.counter = [0,0,0,0]
+    console.log("Start Groupe " + this.index + " Compteur: " + this.counter[index]);
+    // if (this.counter === undefined || this.index !== index) this.counter = 0
     if (this.index === undefined || this.index !== index) this.index = index
-    if (this.counter % 2 === 0) {
+    if (this.counter[index] % 2 === 0) {
       const billsOfThisIndex = filteredBills(bills, getStatus(this.index));
       $(`#arrow-icon${this.index}`).css({ transform: 'rotate(0deg)'})
       $(`#status-bills-container${this.index}`)
         .html(cards(billsOfThisIndex))
       console.log("Show Tickets")
-      
+
       billsOfThisIndex.forEach(bill => {
         $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
       })
-      this.counter ++
+      this.counter[index] ++
     } else {
       $(`#arrow-icon${this.index}`).css({ transform: 'rotate(90deg)'})
       $(`#status-bills-container${this.index}`)
         .html("")
       console.log("Close Tickets")
-      this.counter ++
+      this.counter[index] ++
     }
-    console.log("End  Groupe " + this.index + " Compteur: " + this.counter);
-
+    console.log("End  Groupe " + this.index + " Compteur: " + this.counter[index]);
 
     return bills
 
